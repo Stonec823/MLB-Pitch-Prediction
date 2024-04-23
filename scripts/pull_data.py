@@ -6,20 +6,14 @@ from pybaseball import  statcast
 import pandas as pd
 import numpy as np
 
+def pull_stats (first_name, last_name, team_abbreviation):
+    name = playerid_lookup(last_name, first_name)
+    
+    if len(name) > 1:
+        print()
+    df = statcast_pitcher('2023-04-01', '2023-09-30', name['key_mlbam'])
 
-# %%
-#This function finds id info for any player in baseball history. I'll choose one of the more popular and successful pitchers in recent years Blake Snell for my first example
-# a = playerid_lookup('snell', 'blake')
-
-# There was a Blake snell that played in the early 1900's, so just filtering odwn. We'll extract the id to use for stat searching
-# a[a['mlb_played_first'] > 2000.0]
-
-# %%
-#This data is on a pitch level. This is df contains all 3000+ pitches thrown by Snell in the designated timeframe.
-
-df = statcast_pitcher('2023-04-01', '2023-09-30', 605483)
-
-path_1 = '/Users/cstone/Documents/Projects/MLB Game Prediction/data/raw'
+path_1 = '/Users/cstone/Documents/Projects/MLB Pitch Prediction/data/raw'
 # This table contains some factors that I assume will be key in predicting pitch type. 
 
 # %%
