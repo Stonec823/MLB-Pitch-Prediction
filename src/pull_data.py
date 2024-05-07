@@ -6,18 +6,27 @@ from pybaseball import  statcast # type: ignore
 import pandas as pd
 import numpy as np
 
-def pull_data (first_name, last_name, team_abbreviation):
-    name = playerid_lookup(last_name, first_name)
+def pull_data (first_name, last_name, team_abbreviation = None):
     
+    '''
+    This makes the call to the pybaseball function player_id lookup to obtain the id value for the pitcher
+    
+    If it detects multiple pitchers of the same name, if will select the most recent pitcher to debut
+    
+    Then it will use the id to obtain their stats in a given timeframe. In this case for the 2023 season
+    '''
+    name = playerid_lookup(last_name, first_name)
     if len(name) > 1:
-        print()
-    df = statcast_pitcher('2023-04-01', '2023-09-30', name['key_mlbam'])
+        name = name.sort_values(by='mlb_played_first', ascending=False)
+        name = name.head(1)
 
-    path_1 = '/Users/cstone/Documents/Projects/MLB Pitch Prediction/data/raw'
+    df = statcast_pitcher('2023-04-01', '2023-09-30', name['key_mlbam'])
     return df
 
 
 def remove_factors (df):
+    
+    
     '''
     This identifies all columns with missing values, except for on_base columns. 
     It also further removes all columns that would be insignigicant to predicting pitch type
@@ -69,6 +78,16 @@ def return_cleaned_df (df, path):
     transformed_data = pd.get_dummies(df, columns=['if_fielding_alignment', 'of_fielding_alignment'], drop_first=True)
 
     path = '/Users/cstone/Documents/Projects/MLB Pitch Prediction/data/raw/cleaned'
-    pd.to_csv()
+    #pd.to_csv() 
 
 
+        
+        
+def pull_pitcher_data(first_name, last_name):
+    
+    df = pull_data(first_name, last_name)
+    df = remove_factors(df)
+    df = transform_data(df)
+    return return_cleaned_df(df, '../MLB Pitch Prediction/data/raw/cleaned')
+    
+    
