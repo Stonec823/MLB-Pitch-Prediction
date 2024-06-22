@@ -6,7 +6,7 @@ from pybaseball import  statcast # type: ignore
 import pandas as pd
 import numpy as np
 
-def pull_data (first_name, last_name, team_abbreviation = None):
+def pull_data (first_name, last_name, start_date, end_date, team_abbreviation = None):
     
     '''
     This makes the call to the pybaseball function player_id lookup to obtain the id value for the pitcher
@@ -19,8 +19,8 @@ def pull_data (first_name, last_name, team_abbreviation = None):
     if len(name) > 1:
         name = name.sort_values(by='mlb_played_first', ascending=False)
         name = name.head(1)
-
-    df = statcast_pitcher('2023-04-01', '2023-09-30', name['key_mlbam'])
+    id = name['key_mlbam'].values[0]
+    df = statcast_pitcher(start_date, end_date, id)
     return df
 
 
@@ -63,7 +63,7 @@ def remove_factors (df):
 def transform_data(df):
 
     '''
-    This transforms all remaaining columns with categorical data types to either binary or dummies
+    This transforms all remaaining columns with categorical data types to either binary or dummie variables
     '''
     df['batter_is_right'] = np.where(df['stand'] == 'R', 1, 0)
     df['pitcher_is_right'] = np.where(df['p_throws'] == 'R', 1, 0)
@@ -73,21 +73,22 @@ def transform_data(df):
     
     return df
 
-def return_cleaned_df (df, path):
-    #transforming fielding alignment
-    transformed_data = pd.get_dummies(df, columns=['if_fielding_alignment', 'of_fielding_alignment'], drop_first=True)
-
-    path = '/Users/cstone/Documents/Projects/MLB Pitch Prediction/data/raw/cleaned'
-    #pd.to_csv() 
-
-
-        
-        
-def pull_pitcher_data(first_name, last_name):
+# def load_df (df, path):
+#     #transforming fielding alignment
     
-    df = pull_data(first_name, last_name)
+
+#     df.to_csv()
+#     #pd.to_csv() 
+
+
+        
+        
+def pull_pitcher_data(first_name, last_name, start_date, end_date):
+    
+    df = pull_data(first_name, last_name, start_date, end_date)
     df = remove_factors(df)
     df = transform_data(df)
-    return return_cleaned_df(df, '../MLB Pitch Prediction/data/raw/cleaned')
+    
+    return df
     
     
