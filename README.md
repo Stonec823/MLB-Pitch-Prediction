@@ -11,7 +11,43 @@ How accurately, if at all, can pitch type be predicted for an MLB pitcher?
 
 Data:
 
-PitchFX pitch-level data from MLB Baseball Savant. This raw data is obtained through the pybaseball python package, since licenses to this data are not publically available. 
+The raw data inputs are PitchFX pitch-level data from MLB Baseball Savant. This raw data is obtained through the pybaseball python package, since licenses to this data are not publically available. The pybaseball package can query MLB Baseball Savant through a handful of functions upon importing
+
+
+Data Exploration
+- Explore API functions and data retrieved
+- Vizualize distributions and summary statistics
+
+Data Cleaning
+- Clean data types
+- Remove/impute missing rows and columns
+- Remove irrelevant columns
+
+Data Transformation
+- Outliers
+- Encode categorical variables
+- Loaded pull_data.py script with repeatable functions to pull, clean, and transform data
+
+Feature Selection
+- LASSO
+Model Exploration/CV
+- KNN
+- Neural Network
+- Random Forest
+
+Model Selection
+- Visualize results between models
+
+Model Training/Testing
+- Scale data
+- 
+
+Model Deployment
+
+
+Adjusting Model to multiple pitchers
+
+
 
 
 
