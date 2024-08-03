@@ -1,5 +1,5 @@
 # %%
-from data_transformation.pull_data import pull_pitcher_data
+from pull_data import pull_pitcher_data
 
 first = 'blake'
 last = 'snell'
