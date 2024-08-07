@@ -1,8 +1,8 @@
 # %%
 from pull_data import pull_pitcher_data
 
-first = 'blake'
-last = 'snell'
+first = 'max'
+last = 'fried'
 start = '2023-04-30'
 end = '2023-10-01'
 
