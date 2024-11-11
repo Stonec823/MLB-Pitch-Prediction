@@ -39,13 +39,10 @@ Model Selection
 - Visualize results between models
 
 Model Training/Testing
-- Scale data
-- 
-
-Model Deployment
+- Scale data accoridngly
+- Train on best determined model type
 
 
-Adjusting Model to multiple pitchers
 
 
 
