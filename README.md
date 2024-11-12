@@ -13,6 +13,7 @@ Data:
 
 The raw data inputs are PitchFX pitch-level data from MLB Baseball Savant. This raw data is obtained through the pybaseball python package, since licenses to this data are not publically available. The pybaseball package can query MLB Baseball Savant through a handful of functions upon importing
 
+Process:
 
 Data Exploration
 - Explore API functions and data retrieved
@@ -26,21 +27,24 @@ Data Cleaning
 Data Transformation
 - Outliers
 - Encode categorical variables
-- Loaded pull_data.py script with repeatable functions to pull, clean, and transform data
+- Load pull_data.py script with repeatable functions to pull, clean, and transform data
 
 Feature Selection
-- LASSO
+- TBD
+  
 Model Exploration/CV
 - KNN
-- Neural Network
 - Random Forest
+- TBD
 
 Model Selection
-- Visualize results between models
+- TBD
 
 Model Training/Testing
-- Scale data accoridngly
-- Train on best determined model type
+- TBD
+
+Model Application/Deployment
+-TBD
 
 
 
