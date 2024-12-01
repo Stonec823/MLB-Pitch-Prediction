@@ -13,44 +13,10 @@ Data:
 
 The raw data inputs are PitchFX pitch-level data from MLB Baseball Savant. This raw data is obtained through the pybaseball python package, since licenses to this data are not publically available. The pybaseball package can query MLB Baseball Savant through a handful of functions upon importing
 
-Process:
+Approach:
 
-Data Exploration
-- Explore API functions and data retrieved
-- Vizualize distributions and summary statistics
+The first task will be to understand the pybaseball API and form a cohesive script to pull data quickly for the model. The API can be a bit slow since it’s pulling live data from MLB Baseball Savant. When considering what timeframe to consider when pulling pitch data, it seems 1 season is the most common sense choice. This makes the most sense for speed purposes, and also due to pitchers sometimes changing repertoires between seasons. 
 
-Data Cleaning
-- Clean data types
-- Remove/impute missing rows and columns
-- Remove irrelevant columns
+After pulling in the raw data, a substantial amount of cleaning and transforming will be needed. In terms of features, Baseball Savant basically gives you every metric you could think of on a pitch-level basis. Most of it however, won’t be necessary for a predictive pitch model. Many of these features are describing the event itself (break angle, swing speed, location, launch angle etc.). I narrowed down to just any features that could possibly predict the next pitch. Further feature selection will take place during modeling. I then added in some lag features for previous pitches, since pitches are often thrown in sequences. 
 
-Data Transformation
-- Outliers
-- Encode categorical variables
-- Load pull_data.py script with repeatable functions to pull, clean, and transform data
-
-Feature Selection
-- TBD
-  
-Model Exploration/CV
-- KNN
-- Random Forest
-- TBD
-
-Model Selection
-- TBD
-
-Model Training/Testing
-- TBD
-
-Model Application/Deployment
--TBD
-
-
-
-
-
-
-
-
-
+The modeling approach will be to test a variety of multiclass classification models and select the most accurate while considering which model fits the problem best. Different models will be compared based on their accuracy, F1-score, and then visually with confusion matrices and ROC curves. A new model will need to be generated on a per-pitcher basis, since all pitchers have different tendencies and slightly different pitch types as well. For simplicity, certain pitch types will be grouped together and mapped accordingly. This will allow us to more easily compare results between pitchers. 
