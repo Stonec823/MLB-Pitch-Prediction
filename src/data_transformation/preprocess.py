@@ -13,18 +13,21 @@ def pull_data (first_name, last_name, start_date, end_date, team_abbreviation = 
     
     Then it will use the id to obtain their stats in a given timeframe. In this case for the 2023 season
     '''
-    name = playerid_lookup(last_name, first_name)
-    if len(name) > 1:
-        name = name.sort_values(by='mlb_played_first', ascending=False)
-        name = name.head(1)
-    id = name['key_mlbam'].values[0]
-    df = statcast_pitcher(start_date, end_date, id)
-    return df
+    try: 
+        name = playerid_lookup(last_name, first_name)
+        if len(name) > 1:
+            name = name.sort_values(by='mlb_played_first', ascending=False)
+            name = name.head(1)
+        id = name['key_mlbam'].values[0]
+        df = statcast_pitcher(start_date, end_date, id)
+        return df
+    except:
+        print('Please check name spelling')
 
 def add_lag_features (df):
     
     '''
-    This take several steps to add lag features and other aggregate features that should be helpful in moedling
+    This takes several steps to add lag features and other aggregate features that should be helpful in modeling
     
     '''
     pitch_dict = {'FF':0, 'FA':0,
@@ -37,7 +40,12 @@ def add_lag_features (df):
               'PO':np.nan}
 
     # Map old pitch types to new mapping
+    df['pa_id'] = str(df['game_pk']) + "-" + str(df['at_bat_number'])
     df['pitch_type_map'] = df['pitch_type'].map(pitch_dict)
+    
+    #dropping rows with Nan
+    df = df.dropna(subset=['pitch_type_map'])
+    df['pitch_type_map'] = df['pitch_type_map'].astype(int)
     df.dropna(subset=['pitch_type_map'], inplace = True)
     
     #add lag pitches
@@ -76,33 +84,38 @@ def remove_factors (df):
     
     
     '''
-    This identifies all columns with missing values, except for on_base columns. 
-    It also further removes all columns that would be insignigicant to predicting pitch type
+    This will remove columns with missing values, and also remove lots of features that occur during or after the pitch 
+    since we will only be interested in predicitive and situational features
+    
     '''
     #missing values
     missing = df.isna().sum().reset_index()
     missing = missing.loc[missing[0] > 0]
     removal_list = missing['index'].to_list()
 
-    #keeping on_base columns and changing to binary data types
+    
    
-    removal_list =  ['release_speed', 'release_pos_x',
+    removal_list = ['release_speed', 'release_pos_x',
             'release_pos_z', 'player_name', 'batter', 'pitcher', 'description',
             'zone', 'des', 'game_type', 'home_team',
             'away_team', 'type', 'game_year', 'pfx_x', 'pfx_z',
             'plate_x', 'plate_z', 'fielder_2', 'vx0', 'vy0', 'vz0', 'ax', 'ay',
-            'az', 'sz_top', 'sz_bot', 'effective_speed', 'release_extension',
-            'game_pk', 'pitcher.1', 'fielder_2.1', 'fielder_3', 'fielder_4',
+            'az', 'sz_top', 'sz_bot', 'effective_speed', 'release_extension','game_pk', 'fielder_3', 'fielder_4',
             'fielder_5', 'fielder_6', 'fielder_7', 'fielder_8', 'fielder_9',
             'release_pos_y', 'pitch_name', 'game_date','post_away_score',
-            'post_home_score', 'post_bat_score', 'post_fld_score','on_3b', 'on_2b','on_1b'
-            ,'hit_location', 'bb_type', 'events', 'spin_dir', 'spin_rate_deprecated', 'break_angle_deprecated', 'break_length_deprecated', 'woba_value', 'woba_denom', 'babip_value', 'iso_value'
-            ,'tfs_deprecated', 'tfs_zulu_deprecated', 'umpire', 'sv_id'
-            ,'hit_distance_sc', 'launch_speed', 'launch_angle', 'release_spin_rate','hc_x', 'hc_y'
-            ]
+            'post_home_score', 'post_bat_score', 'post_fld_score','on_3b', 'on_2b','on_1b',
+            'hit_location', 'bb_type', 'events', 'spin_dir', 'spin_rate_deprecated', 'break_angle_deprecated', 'break_length_deprecated', 'woba_value', 'woba_denom', 'babip_value', 'iso_value',
+            'tfs_deprecated', 'tfs_zulu_deprecated', 'umpire', 'sv_id',
+            'hit_distance_sc', 'launch_speed', 'launch_angle', 'release_spin_rate','hc_x', 'hc_y',
+            'pitcher_days_since_prev_game', 'batter_days_since_prev_game',
+            'pitcher_days_until_next_game', 'batter_days_until_next_game',
+            'api_break_z_with_gravity', 'api_break_x_arm', 'api_break_x_batter_in',
+            'arm_angle', 'delta_run_exp', 'bat_speed', 'swing_length', 'estimated_ba_using_speedangle',
+       'estimated_woba_using_speedangle', 'launch_speed_angle', 'estimated_slg_using_speedangle', 'spin_axis',
+       'delta_pitcher_run_exp']
     #dropping removal list from dataframe
-    df2 = df.drop(removal_list, axis=1)
-    return df2
+    df = df.drop(removal_list, axis=1)
+    return df
     
 def encode(df):
 
@@ -120,9 +133,30 @@ def encode(df):
         
 def pull_pitcher_data(first_name, last_name, start_date, end_date):
     
+    
+    
     df = pull_data(first_name, last_name, start_date, end_date)
     df = add_lag_features(df)
     df = remove_factors(df)
     df = encode(df)
+    
+    #filtering to a final featureset
+    
+    cols_to_keep = ['balls', 'strikes', 'outs_when_up', 'inning',
+       'at_bat_number', 'pitch_number', 'home_score', 'away_score',
+       'bat_score',
+       'n_thruorder_pitcher', 'n_priorpa_thisgame_player_at_bat',
+       'pitch_type_map', 'prev_pitch_1', 'prev_pitch_2', 'prev_pitch_3',
+       'batter_is_right', 'pitcher_is_right', 'inning_top'
+       ]
+    prop_columns = [col for col in df.columns if col.startswith('prop')]
+    final_features =cols_to_keep + prop_columns
+    # this is dropping any NA rows, or 0 rows
+    df = df[final_features]
+    df = df.dropna(axis='columns')
+    
+
+    # Drop rows where any 'prop' column equals 0
+    df = df[~(df[prop_columns] == 0).any(axis=1)]
     
     return df
