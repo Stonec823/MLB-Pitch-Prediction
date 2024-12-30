@@ -22,7 +22,7 @@ def pull_data (first_name, last_name, start_date, end_date, team_abbreviation = 
         df = statcast_pitcher(start_date, end_date, id)
         return df
     except:
-        print('Please check name spelling')
+        print('Please check name spelling, or add team name abbreviation for more specificity')
 
 def add_lag_features (df):
     df = df.copy()
