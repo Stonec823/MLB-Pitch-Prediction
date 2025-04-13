@@ -1,9 +1,10 @@
 # %%
 from preprocess import pull_pitcher_data
+
 import os
 
-first = 'chris'
-last = 'sale'
+first = 'max'
+last = 'fried'
 start = '2024-04-05'
 end = '2024-10-01'
 

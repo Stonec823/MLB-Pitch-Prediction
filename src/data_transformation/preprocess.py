@@ -144,19 +144,18 @@ def pull_pitcher_data(first_name, last_name, start_date, end_date):
     df = encode(df)
     
     #filtering to a final featureset
+    df['home_score_diff'] = df['home_score'] - df['away_score']
     
-    final_features = ['game_pk', 'at_bat_number', 'pitch_number','pitch_type' ,'pitch_type_map',
-        'is_fastball', 'balls', 'strikes', 'outs_when_up', 'inning',
-       'home_score', 'away_score',
-       'bat_score', 'n_thruorder_pitcher', 'n_priorpa_thisgame_player_at_bat',
-       'prev_pitch_1', 'prev_pitch_2', 'prev_pitch_3',
-       'batter_is_right', 'pitcher_is_right', 'inning_top'
-       ]
+    # final_features = ['game_pk', 'at_bat_number','pitch_type' ,'pitch_type_map', 'balls', 'strikes', 'outs_when_up',
+    #    'bat_score', 'home_score_diff',
+    #    'prev_pitch_1', 'prev_pitch_2', 'prev_pitch_3',
+    #    'batter_is_right', 'pitcher_is_right', 
+    #    ]
     #prop_columns = [col for col in df.columns if col.startswith('prop')]
     
     #+ prop_columns
     # this is dropping any NA rows, or 0 rows
-    df = df[final_features]
+    # df = df[final_features]
     #df = df.sort_values(by=['game_pk', 'at_bat_number', 'pitch_number'])
     #df = df.dropna(axis='columns')
     
